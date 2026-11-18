@@ -69,7 +69,47 @@ if (!SpeechRecognition) {
     recognition.onresult = function(event) {
         const words = event.results[0][0].transcript;
 
-        output.textContent = "You said: " + words;
+        
+output.textContent = "You said: " + words;
+
+const message = words.toLowerCase();
+
+let answer = "";
+
+if (message.includes("hello") || message.includes("hi")) {
+    answer = "Hello! It's nice to talk to you!";
+}
+
+else if (message.includes("your name")) {
+    answer = "I'm your new voice assistant!";
+}
+
+else if (message.includes("how are you")) {
+    answer = "I'm doing great! How are you?";
+}
+
+else if (message.includes("what time")) {
+    answer = "I don't have a clock yet!";
+}
+
+else if (message.includes("what is your favorite color")) {
+    answer = "My favorite color is blue!";
+}
+
+else if (message.includes("bye")) {
+    answer = "Goodbye! Talk to you later!";
+}
+
+else {
+    answer = "That's interesting! Tell me more.";
+}
+
+output.textContent += "\nAssistant: " + answer;
+
+const speech = new SpeechSynthesisUtterance(answer);
+speech.lang = "en-US";
+window.speechSynthesis.speak(speech);
+
     };
 
     recognition.onerror = function(event) {
