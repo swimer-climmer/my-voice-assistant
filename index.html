@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Voice Assistant</title>
+    <style>
+        body {
+            background: #101827;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #54d6ff;
+        }
+
+        button {
+            background: #168cff;
+            color: white;
+            border: none;
+            padding: 18px 30px;
+            border-radius: 15px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        #output {
+            font-size: 22px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>My Voice Assistant</h1>
+
+    <p>Click the button and talk to me!</p>
+
+    <button id="listen">🎤 Start Listening</button>
+
+    <div id="output">Waiting for your voice...</div>
+
+<script>
+const listenButton = document.getElementById("listen");
+const output = document.getElementById("output");
+
+const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+if (!SpeechRecognition) {
+    output.textContent =
+        "Sorry! Your browser does not support speech recognition.";
+} else {
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "en-US";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    listenButton.onclick = function() {
+        output.textContent = "Listening... 🎧";
+        recognition.start();
+    };
+
+    recognition.onresult = function(event) {
+        const words = event.results[0][0].transcript;
+
+        output.textContent = "You said: " + words;
+    };
+
+    recognition.onerror = function(event) {
+        output.textContent = "Error: " + event.error;
+    };
+}
+</script>
+
+</body>
+</html>
