@@ -79,6 +79,7 @@
         // MEMORY
 
         let userName = "";
+        let userColor = "";
 
         // LISTENING SETTINGS
 
@@ -229,6 +230,30 @@ if (message.includes("tell me a joke") || message.includes("make me laugh")) {
   ];
 
   return jokes[Math.floor(Math.random() * jokes.length)];
+}
+          // FAVORITE COLOR
+if (message.includes("my favorite color is")) {
+  userColor = message.split("my favorite color is")[1].trim();
+  return "I'll remember that your favorite color is " + userColor + "!";
+}
+
+if (message.includes("what is my favorite color")) {
+  return userColor
+    ? "Your favorite color is " + userColor + "!"
+    : "You haven't told me your favorite color yet.";
+}
+           // COUNTING
+if (message.includes("count to")) {
+  const number = Number(message.match(/\d+/)?.[0]);
+
+  if (number > 0 && number <= 100) {
+    return Array.from(
+      { length: number },
+      (_, i) => i + 1
+    ).join(", ");
+  }
+
+  return "Please ask me to count to a number between 1 and 100.";
 }
             // CONVERSATION
 
