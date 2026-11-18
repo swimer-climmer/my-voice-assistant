@@ -312,6 +312,33 @@ if (message.includes("what is my favorite animal")) {
     ? "Your favorite animal is " + userAnimal + "!"
     : "You haven't told me your favorite animal yet.";
 }
+          // GUESSING GAME
+let secretNumber = Math.floor(Math.random() * 10) + 1;
+let gameActive = false;
+
+if (message.includes("play a guessing game")) {
+  secretNumber = Math.floor(Math.random() * 10) + 1;
+  gameActive = true;
+  return "I'm thinking of a number between 1 and 10. Try to guess it!";
+}
+
+if (gameActive && /^\d+$/.test(message.trim())) {
+  const guess = Number(message);
+
+  if (guess === secretNumber) {
+    gameActive = false;
+    return "You got it! Great guessing!";
+  }
+
+  return guess < secretNumber
+    ? "Too low! Try again."
+    : "Too high! Try again.";
+}
+           // COIN FLIP
+if (message.includes("flip a coin") || message.includes("toss a coin")) {
+  const result = Math.random() < 0.5 ? "heads" : "tails";
+  return "The coin landed on " + result + "!";
+}
             // CONVERSATION
 
             if (
