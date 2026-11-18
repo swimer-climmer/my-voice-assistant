@@ -188,44 +188,52 @@
 
             // MATH
 
+            
+            // MATH BRAIN
+
             const mathMatch = message.match(
-                /(-?\d+(?:\.\d+)?)\s*(plus|minus|times|multiplied by|divided by)\s*(-?\d+(?:\.\d+)?)/
+                /(-?\d+(?:\.\d+)?)\s*(plus|add|minus|subtract|times|multiplied by|multiply|divided by|divide)\s*(-?\d+(?:\.\d+)?)/
             );
 
             if (mathMatch) {
 
                 const a = Number(mathMatch[1]);
-
                 const operation = mathMatch[2];
-
                 const b = Number(mathMatch[3]);
 
-                if (operation === "plus") {
-                    return "The answer is " + (a + b);
+                let result;
+
+                if (operation === "plus" || operation === "add") {
+                    result = a + b;
                 }
 
-                if (operation === "minus") {
-                    return "The answer is " + (a - b);
+                else if (operation === "minus" || operation === "subtract") {
+                    result = a - b;
                 }
 
-                if (
+                else if (
                     operation === "times" ||
-                    operation === "multiplied by"
+                    operation === "multiplied by" ||
+                    operation === "multiply"
                 ) {
-                    return "The answer is " + (a * b);
+                    result = a * b;
                 }
 
-                if (operation === "divided by") {
+                else if (
+                    operation === "divided by" ||
+                    operation === "divide"
+                ) {
 
                     if (b === 0) {
                         return "You cannot divide by zero!";
                     }
 
-                    return "The answer is " + (a / b);
-
+                    result = a / b;
                 }
 
+                return "The answer is " + result + "!";
             }
+
 
             // CONVERSATION
 
