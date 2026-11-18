@@ -186,11 +186,6 @@
 
             }
 
-            // MATH
-
-            
-            // MATH BRAIN
-
 // MATH
 const mathMatch = message.match(
   /(-?\d+(?:\.\d+)?)\s*(\+|plus|add|minus|-|times|\*|multiplied by|multiply|divided by|divide|\/)\s*(-?\d+(?:\.\d+)?)/
@@ -214,6 +209,14 @@ if (mathMatch) {
   }
 
   return "The answer is " + result + "!";
+}
+            // DATE AND TIME
+if (message.includes("what time")) {
+  return "It is " + new Date().toLocaleTimeString() + ".";
+}
+
+if (message.includes("what date") || message.includes("today's date")) {
+  return "Today is " + new Date().toLocaleDateString() + ".";
 }
             // CONVERSATION
 
