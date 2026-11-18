@@ -140,7 +140,56 @@ if (!SpeechRecognition) {
         
 let answer = "";
 
-// REMEMBER YOUR NAME
+// brain
+
+// MATH BRAIN
+
+else if (
+    message.includes("plus") ||
+    message.includes("minus") ||
+    message.includes("times") ||
+    message.includes("multiplied by") ||
+    message.includes("divided by")
+) {
+
+    const mathMatch = message.match(
+        /(-?\d+(?:\.\d+)?)\s*(plus|minus|times|multiplied by|divided by)\s*(-?\d+(?:\.\d+)?)/
+    );
+
+    if (mathMatch) {
+
+        const num1 = Number(mathMatch[1]);
+        const operation = mathMatch[2];
+        const num2 = Number(mathMatch[3]);
+
+        let result;
+
+        if (operation === "plus") {
+            result = num1 + num2;
+        }
+        else if (operation === "minus") {
+            result = num1 - num2;
+        }
+        else if (operation === "times" || operation === "multiplied by") {
+            result = num1 * num2;
+        }
+        else if (operation === "divided by") {
+            result = num2 === 0 ? null : num1 / num2;
+        }
+
+        if (result === null) {
+            answer = "You cannot divide by zero!";
+        } else {
+            answer = "The answer is " + result + "!";
+        }
+
+    } else {
+
+        answer = "I heard a math question, but couldn't understand the numbers.";
+
+    }
+
+}
 
 if (message.includes("my name is")) {
 
