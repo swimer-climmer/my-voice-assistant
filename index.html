@@ -191,50 +191,30 @@
             
             // MATH BRAIN
 
-            const mathMatch = message.match(
-                /(-?\d+(?:\.\d+)?)\s*(plus|add|minus|subtract|times|multiplied by|multiply|divided by|divide)\s*(-?\d+(?:\.\d+)?)/
-            );
+// MATH
+const mathMatch = message.match(
+  /(-?\d+(?:\.\d+)?)\s*(\+|plus|add|minus|-|times|\*|multiplied by|multiply|divided by|divide|\/)\s*(-?\d+(?:\.\d+)?)/
+);
 
-            if (mathMatch) {
+if (mathMatch) {
+  const a = Number(mathMatch[1]);
+  const operation = mathMatch[2];
+  const b = Number(mathMatch[3]);
+  let result;
 
-                const a = Number(mathMatch[1]);
-                const operation = mathMatch[2];
-                const b = Number(mathMatch[3]);
+  if (operation === "+" || operation === "plus" || operation === "add") {
+    result = a + b;
+  } else if (operation === "-" || operation === "minus") {
+    result = a - b;
+  } else if (["times", "*", "multiplied by", "multiply"].includes(operation)) {
+    result = a * b;
+  } else if (["/", "divided by", "divide"].includes(operation)) {
+    if (b === 0) return "You cannot divide by zero!";
+    result = a / b;
+  }
 
-                let result;
-
-                if (operation === "plus" || operation === "add") {
-                    result = a + b;
-                }
-
-                else if (operation === "minus" || operation === "subtract") {
-                    result = a - b;
-                }
-
-                else if (
-                    operation === "times" ||
-                    operation === "multiplied by" ||
-                    operation === "multiply"
-                ) {
-                    result = a * b;
-                }
-
-                else if (
-                    operation === "divided by" ||
-                    operation === "divide"
-                ) {
-
-                    if (b === 0) {
-                        return "You cannot divide by zero!";
-                    }
-
-                    result = a / b;
-                }
-
-                return "The answer is " + result + "!";
-            }
-
-
+  return "The answer is " + result + "!";
+}
             // CONVERSATION
 
             if (
