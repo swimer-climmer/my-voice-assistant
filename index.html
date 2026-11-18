@@ -60,6 +60,7 @@
     <div id="output">Waiting for your voice...</div>
 
     <script>
+        let userName = "";
 const listenButton = document.getElementById("listen");
 const stopButton = document.getElementById("stop");
 const output = document.getElementById("output");
@@ -137,6 +138,29 @@ if (!SpeechRecognition) {
         const message = words.toLowerCase();
 
         let answer = "";
+        //assistent brain
+        
+if (message.includes("my name is")) {
+
+    userName = words.substring(
+        message.indexOf("my name is") + 10
+    ).trim();
+
+    answer = "Nice to meet you, " + userName + "! I'll remember your name.";
+
+}
+
+else if (message.includes("what is my name") ||
+         message.includes("what's my name")) {
+
+    if (userName !== "") {
+        answer = "Your name is " + userName + "!";
+    } else {
+        answer = "I don't know your name yet. What should I call you?";
+    }
+
+}
+
 
         if (message.includes("hello") || message.includes("hi")) {
             answer = "Hello! It's nice to talk to you!";
