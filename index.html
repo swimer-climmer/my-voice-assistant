@@ -218,6 +218,18 @@ if (message.includes("what time")) {
 if (message.includes("what date") || message.includes("today's date")) {
   return "Today is " + new Date().toLocaleDateString() + ".";
 }
+          // JOKES
+if (message.includes("tell me a joke") || message.includes("make me laugh")) {
+  const jokes = [
+    "Why did the computer go to the doctor? Because it had a virus!",
+    "Why was the math book sad? Because it had too many problems!",
+    "What do you call a bear with no teeth? A gummy bear!",
+    "Why did the robot go on vacation? It needed to recharge!",
+    "What is a computer's favorite snack? Microchips!"
+  ];
+
+  return jokes[Math.floor(Math.random() * jokes.length)];
+}
             // CONVERSATION
 
             if (
