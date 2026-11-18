@@ -137,55 +137,77 @@ if (!SpeechRecognition) {
 
         const message = words.toLowerCase();
 
-        let answer = "";
-        //assistent brain
         
+let answer = "";
+
+// REMEMBER YOUR NAME
 
 if (message.includes("my name is")) {
 
     userName = words.substring(
-        message.indexOf("my name is") + 10
+        message.toLowerCase().indexOf("my name is") + 10
     ).trim();
 
-    answer = "Nice to meet you, " + userName + "! I'll remember your name.";
+    answer = "Nice to meet you, " + userName + "!";
 
 }
 
 else if (message.includes("what is my name") ||
-         message.includes("what's my name")) {
+         message.includes("what's my name") ||
+         message.includes("what is my name?")) {
 
     if (userName !== "") {
         answer = "Your name is " + userName + "!";
     } else {
-        answer = "I don't know your name yet. What should I call you?";
+        answer = "You haven't told me your name yet!";
     }
 
 }
 
+// GREETINGS
 
+else if (message.includes("hello") || message.includes("hi")) {
 
-        if (message.includes("hello") || message.includes("hi")) {
-            answer = "Hello! It's nice to talk to you!";
-        }
-        else if (message.includes("your name")) {
-            answer = "I'm your new voice assistant!";
-        }
-        else if (message.includes("how are you")) {
-            answer = "I'm doing great! How are you?";
-        }
-        else if (message.includes("what time")) {
-            answer = "I don't have a clock yet!";
-        }
-        else if (message.includes("favorite color")) {
-            answer = "My favorite color is blue!";
-        }
-        else if (message.includes("bye")) {
-            answer = "Goodbye! Talk to you later!";
-            listening = false;
-        }
-        else {
-            answer = "That's interesting! Tell me more.";
-        }
+    answer = "Hello " + (userName || "friend") + "!";
+
+}
+
+else if (message.includes("your name")) {
+
+    answer = "I'm your new voice assistant!";
+
+}
+
+else if (message.includes("how are you")) {
+
+    answer = "I'm doing great! How are you?";
+
+}
+
+else if (message.includes("what time")) {
+
+    answer = "I don't have a clock yet!";
+
+}
+
+else if (message.includes("favorite color")) {
+
+    answer = "My favorite color is blue!";
+
+}
+
+else if (message.includes("bye")) {
+
+    answer = "Goodbye! Talk to you later!";
+    listening = false;
+
+}
+
+else {
+
+    answer = "That's interesting! Tell me more.";
+
+}
 
         output.textContent += "\nAssistant: " + answer;
 
