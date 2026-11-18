@@ -49,6 +49,13 @@
 
     <button id="listen">🎤 Start Talking</button>
 <button id="stop">⏹ Stop</button>
+
+    <br><br>
+
+<label for="voiceSelect">Choose my voice:</label>
+
+<select id="voiceSelect">
+</select>
     
     <div id="output">Waiting for your voice...</div>
 
@@ -56,6 +63,30 @@
 const listenButton = document.getElementById("listen");
 const stopButton = document.getElementById("stop");
 const output = document.getElementById("output");
+        
+const voiceSelect = document.getElementById("voiceSelect");
+
+let availableVoices = [];
+
+function loadVoices() {
+    availableVoices = window.speechSynthesis.getVoices();
+
+    voiceSelect.innerHTML = "";
+
+    availableVoices.forEach((voice, index) => {
+        const option = document.createElement("option");
+
+        option.value = index;
+        option.textContent = voice.name + " (" + voice.lang + ")";
+
+        voiceSelect.appendChild(option);
+    });
+}
+
+window.speechSynthesis.onvoiceschanged = loadVoices;
+
+loadVoices();
+
 
 const SpeechRecognition =
     window.SpeechRecognition ||
@@ -135,6 +166,12 @@ if (!SpeechRecognition) {
         speaking = true;
 
         const speech = new SpeechSynthesisUtterance(answer);
+
+const selectedVoice = availableVoices[voiceSelect.value];
+
+if (selectedVoice) {
+    speech.voice = selectedVoice;
+}
 
         speech.lang = "en-US";
 
