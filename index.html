@@ -80,6 +80,8 @@
 
         let userName = "";
         let userColor = "";
+        let userBirthday = "";
+        let userAnimal = "";
 
         // LISTENING SETTINGS
 
@@ -287,6 +289,28 @@ if (message.includes("what is an atom")) {
 
 if (message.includes("what is gravity")) {
   return "Gravity is a force that pulls objects toward each other. It keeps us on the ground!";
+}
+           // BIRTHDAY MEMORY
+if (message.includes("my birthday is")) {
+  userBirthday = message.split("my birthday is")[1].trim();
+  return "I'll remember your birthday is " + userBirthday + "!";
+}
+
+if (message.includes("when is my birthday")) {
+  return userBirthday
+    ? "Your birthday is " + userBirthday + "!"
+    : "You haven't told me your birthday yet.";
+}
+           // ANIMAL MEMORY
+if (message.includes("my favorite animal is")) {
+  userAnimal = message.split("my favorite animal is")[1].trim();
+  return "Cool! I'll remember that you like " + userAnimal + "!";
+}
+
+if (message.includes("what is my favorite animal")) {
+  return userAnimal
+    ? "Your favorite animal is " + userAnimal + "!"
+    : "You haven't told me your favorite animal yet.";
 }
             // CONVERSATION
 
