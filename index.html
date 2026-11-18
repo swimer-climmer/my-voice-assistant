@@ -59,67 +59,157 @@
     
     <div id="output">Waiting for your voice...</div>
 
-    <script>
-        let userName = "";
+   
+
+<script>
 const listenButton = document.getElementById("listen");
 const stopButton = document.getElementById("stop");
 const output = document.getElementById("output");
-        
 const voiceSelect = document.getElementById("voiceSelect");
 
+let userName = "";
+let listening = false;
+let speaking = false;
 let availableVoices = [];
-
-function loadVoices() {
-    availableVoices = window.speechSynthesis.getVoices();
-
-    voiceSelect.innerHTML = "";
-
-    availableVoices.forEach((voice, index) => {
-        const option = document.createElement("option");
-
-        option.value = index;
-        option.textContent = voice.name + " (" + voice.lang + ")";
-
-        voiceSelect.appendChild(option);
-    });
-}
-
-window.speechSynthesis.onvoiceschanged = loadVoices;
-
-loadVoices();
-
 
 const SpeechRecognition =
     window.SpeechRecognition ||
     window.webkitSpeechRecognition;
 
-let listening = false;
-let recognition;
-let speaking = false;
+function loadVoices() {
+    availableVoices = window.speechSynthesis.getVoices();
+    voiceSelect.innerHTML = "";
+
+    availableVoices.forEach((voice, index) => {
+        const option = document.createElement("option");
+        option.value = index;
+        option.textContent = voice.name + " (" + voice.lang + ")";
+        voiceSelect.appendChild(option);
+    });
+}
+
+window.speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+
+function speak(answer) {
+    speaking = true;
+
+    const speech = new SpeechSynthesisUtterance(answer);
+    const selectedVoice = availableVoices[voiceSelect.value];
+
+    if (selectedVoice) speech.voice = selectedVoice;
+
+    speech.lang = "en-US";
+
+    speech.onend = function() {
+        speaking = false;
+        if (listening) setTimeout(startListening, 500);
+    };
+
+    speech.onerror = function() {
+        speaking = false;
+        if (listening) setTimeout(startListening, 500);
+    };
+
+    window.speechSynthesis.speak(speech);
+}
+
+function startListening() {
+    if (!listening || speaking) return;
+
+    try {
+        recognition.start();
+    } catch (error) {
+        console.log("Recognition is already starting.");
+    }
+}
+
+function getAnswer(words) {
+    const message = words.toLowerCase().trim();
+
+    // NAME MEMORY
+
+    if (message.includes("my name is")) {
+        userName = words.substring(
+            message.indexOf("my name is") + 10
+        ).trim();
+
+        return "Nice to meet you, " + userName + "!";
+    }
+
+    if (message.includes("what is my name") ||
+        message.includes("what's my name")) {
+        return userName
+            ? "Your name is " + userName + "!"
+            : "I don't know your name yet!";
+    }
+
+    // MATH
+
+    const mathMatch = message.match(
+        /(-?\d+(?:\.\d+)?)\s*(plus|minus|times|multiplied by|divided by)\s*(-?\d+(?:\.\d+)?)/
+    );
+
+    if (mathMatch) {
+        const a = Number(mathMatch[1]);
+        const operation = mathMatch[2];
+        const b = Number(mathMatch[3]);
+
+        if (operation === "plus") return "The answer is " + (a + b);
+        if (operation === "minus") return "The answer is " + (a - b);
+        if (operation === "times" || operation === "multiplied by")
+            return "The answer is " + (a * b);
+
+        if (operation === "divided by") {
+            return b === 0
+                ? "You cannot divide by zero!"
+                : "The answer is " + (a / b);
+        }
+    }
+
+    // CONVERSATION
+
+    if (message.includes("hello") || message.includes("hi")) {
+        return "Hello " + (userName || "friend") + "!";
+    }
+
+    if (message.includes("your name")) {
+        return "I'm your voice assistant!";
+    }
+
+    if (message.includes("how are you")) {
+        return "I'm doing great! How are you?";
+    }
+
+    if (message.includes("what time")) {
+        return "I don't have a clock yet!";
+    }
+
+    if (message.includes("favorite color")) {
+        return "My favorite color is blue!";
+    }
+
+    if (message.includes("bye")) {
+        listening = false;
+        return "Goodbye! Talk to you later!";
+    }
+
+    return "I don't know that one yet, but I'm learning!";
+}
 
 if (!SpeechRecognition) {
-    output.textContent = "Your browser does not support speech recognition.";
+    output.textContent =
+        "Speech recognition is not supported in this browser.";
 } else {
-
-    recognition = new SpeechRecognition();
+    const recognition = new SpeechRecognition();
 
     recognition.lang = "en-US";
     recognition.continuous = false;
     recognition.interimResults = false;
 
-    function startListening() {
-        if (!listening || speaking) return;
-
-        try {
-            recognition.start();
-        } catch (error) {
-            console.log("Already listening");
-        }
-    }
-
     listenButton.onclick = function() {
         listening = true;
-        output.textContent = "I'm listening! 🎧";
+        output.textContent = "Listening...";
         startListening();
     };
 
@@ -131,178 +221,29 @@ if (!SpeechRecognition) {
     };
 
     recognition.onresult = function(event) {
-
         const words = event.results[0][0].transcript;
+
         output.textContent = "You said: " + words;
 
-        const message = words.toLowerCase();
-
-        
-let answer = "";
-
-// brain
-
-// MATH BRAIN
-
-else if (
-    message.includes("plus") ||
-    message.includes("minus") ||
-    message.includes("times") ||
-    message.includes("multiplied by") ||
-    message.includes("divided by")
-) {
-
-    const mathMatch = message.match(
-        /(-?\d+(?:\.\d+)?)\s*(plus|minus|times|multiplied by|divided by)\s*(-?\d+(?:\.\d+)?)/
-    );
-
-    if (mathMatch) {
-
-        const num1 = Number(mathMatch[1]);
-        const operation = mathMatch[2];
-        const num2 = Number(mathMatch[3]);
-
-        let result;
-
-        if (operation === "plus") {
-            result = num1 + num2;
-        }
-        else if (operation === "minus") {
-            result = num1 - num2;
-        }
-        else if (operation === "times" || operation === "multiplied by") {
-            result = num1 * num2;
-        }
-        else if (operation === "divided by") {
-            result = num2 === 0 ? null : num1 / num2;
-        }
-
-        if (result === null) {
-            answer = "You cannot divide by zero!";
-        } else {
-            answer = "The answer is " + result + "!";
-        }
-
-    } else {
-
-        answer = "I heard a math question, but couldn't understand the numbers.";
-
-    }
-
-}
-
-if (message.includes("my name is")) {
-
-    userName = words.substring(
-        message.toLowerCase().indexOf("my name is") + 10
-    ).trim();
-
-    answer = "Nice to meet you, " + userName + "!";
-
-}
-
-else if (message.includes("what is my name") ||
-         message.includes("what's my name") ||
-         message.includes("what is my name?")) {
-
-    if (userName !== "") {
-        answer = "Your name is " + userName + "!";
-    } else {
-        answer = "You haven't told me your name yet!";
-    }
-
-}
-
-// GREETINGS
-
-else if (message.includes("hello") || message.includes("hi")) {
-
-    answer = "Hello " + (userName || "friend") + "!";
-
-}
-
-else if (message.includes("your name")) {
-
-    answer = "I'm your new voice assistant!";
-
-}
-
-else if (message.includes("how are you")) {
-
-    answer = "I'm doing great! How are you?";
-
-}
-
-else if (message.includes("what time")) {
-
-    answer = "I don't have a clock yet!";
-
-}
-
-else if (message.includes("favorite color")) {
-
-    answer = "My favorite color is blue!";
-
-}
-
-else if (message.includes("bye")) {
-
-    answer = "Goodbye! Talk to you later!";
-    listening = false;
-
-}
-
-else {
-
-    answer = "That's interesting! Tell me more.";
-
-}
+        const answer = getAnswer(words);
 
         output.textContent += "\nAssistant: " + answer;
 
-        speaking = true;
-
-        const speech = new SpeechSynthesisUtterance(answer);
-
-const selectedVoice = availableVoices[voiceSelect.value];
-
-if (selectedVoice) {
-    speech.voice = selectedVoice;
-}
-
-        speech.lang = "en-US";
-
-        speech.onend = function() {
-            speaking = false;
-
-            if (listening) {
-                setTimeout(startListening, 300);
-            }
-        };
-
-        speech.onerror = function() {
-            speaking = false;
-
-            if (listening) {
-                setTimeout(startListening, 300);
-            }
-        };
-
-        window.speechSynthesis.speak(speech);
+        speak(answer);
     };
 
     recognition.onerror = function(event) {
-        console.log("Recognition error:", event.error);
-
         if (event.error === "not-allowed") {
             listening = false;
             output.textContent = "Please allow microphone access.";
+        } else if (event.error !== "no-speech") {
+            output.textContent = "Microphone error: " + event.error;
         }
     };
 
     recognition.onend = function() {
         if (listening && !speaking) {
-            setTimeout(startListening, 300);
+            setTimeout(startListening, 500);
         }
     };
 }
