@@ -18,13 +18,17 @@
             font-size: 36px;
         }
 
+        button, select {
+            padding: 14px 22px;
+            border-radius: 12px;
+            font-size: 18px;
+            margin: 8px;
+        }
+
         button {
             background: #168cff;
             color: white;
             border: none;
-            padding: 18px 30px;
-            border-radius: 15px;
-            font-size: 20px;
             cursor: pointer;
         }
 
@@ -32,10 +36,15 @@
             background: #0066cc;
         }
 
+        select {
+            background: white;
+            color: #101827;
+        }
+
         #output {
-            font-size: 22px;
+            font-size: 21px;
             margin-top: 30px;
-            line-height: 1.6;
+            line-height: 1.7;
             white-space: pre-line;
         }
     </style>
@@ -48,206 +57,349 @@
     <p>Click the button and talk to me!</p>
 
     <button id="listen">🎤 Start Talking</button>
-<button id="stop">⏹ Stop</button>
+    <button id="stop">⏹ Stop</button>
 
     <br><br>
 
-<label for="voiceSelect">Choose my voice:</label>
+    <label for="voiceSelect">Choose my voice:</label>
 
-<select id="voiceSelect">
-</select>
-    
+    <select id="voiceSelect"></select>
+
     <div id="output">Waiting for your voice...</div>
 
-   
+    <script>
 
-<script>
-const listenButton = document.getElementById("listen");
-const stopButton = document.getElementById("stop");
-const output = document.getElementById("output");
-const voiceSelect = document.getElementById("voiceSelect");
+        // ELEMENTS
 
-let userName = "";
-let listening = false;
-let speaking = false;
-let availableVoices = [];
+        const listenButton = document.getElementById("listen");
+        const stopButton = document.getElementById("stop");
+        const output = document.getElementById("output");
+        const voiceSelect = document.getElementById("voiceSelect");
 
-const SpeechRecognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
+        // MEMORY
 
-function loadVoices() {
-    availableVoices = window.speechSynthesis.getVoices();
-    voiceSelect.innerHTML = "";
+        let userName = "";
 
-    availableVoices.forEach((voice, index) => {
-        const option = document.createElement("option");
-        option.value = index;
-        option.textContent = voice.name + " (" + voice.lang + ")";
-        voiceSelect.appendChild(option);
-    });
-}
+        // LISTENING SETTINGS
 
-window.speechSynthesis.onvoiceschanged = loadVoices;
-loadVoices();
+        let listening = false;
+        let speaking = false;
 
-function speak(answer) {
-    speaking = true;
+        // VOICES
 
-    const speech = new SpeechSynthesisUtterance(answer);
-    const selectedVoice = availableVoices[voiceSelect.value];
+        let availableVoices = [];
 
-    if (selectedVoice) speech.voice = selectedVoice;
+        function loadVoices() {
 
-    speech.lang = "en-US";
+            availableVoices = window.speechSynthesis.getVoices();
 
-    speech.onend = function() {
-        speaking = false;
-        if (listening) setTimeout(startListening, 500);
-    };
+            voiceSelect.innerHTML = "";
 
-    speech.onerror = function() {
-        speaking = false;
-        if (listening) setTimeout(startListening, 500);
-    };
+            availableVoices.forEach((voice, index) => {
 
-    window.speechSynthesis.speak(speech);
-}
+                const option = document.createElement("option");
 
-function startListening() {
-    if (!listening || speaking) return;
+                option.value = index;
 
-    try {
-        recognition.start();
-    } catch (error) {
-        console.log("Recognition is already starting.");
-    }
-}
+                option.textContent =
+                    voice.name + " (" + voice.lang + ")";
 
-function getAnswer(words) {
-    const message = words.toLowerCase().trim();
+                voiceSelect.appendChild(option);
 
-    // NAME MEMORY
+            });
 
-    if (message.includes("my name is")) {
-        userName = words.substring(
-            message.indexOf("my name is") + 10
-        ).trim();
-
-        return "Nice to meet you, " + userName + "!";
-    }
-
-    if (message.includes("what is my name") ||
-        message.includes("what's my name")) {
-        return userName
-            ? "Your name is " + userName + "!"
-            : "I don't know your name yet!";
-    }
-
-    // MATH
-
-    const mathMatch = message.match(
-        /(-?\d+(?:\.\d+)?)\s*(plus|minus|times|multiplied by|divided by)\s*(-?\d+(?:\.\d+)?)/
-    );
-
-    if (mathMatch) {
-        const a = Number(mathMatch[1]);
-        const operation = mathMatch[2];
-        const b = Number(mathMatch[3]);
-
-        if (operation === "plus") return "The answer is " + (a + b);
-        if (operation === "minus") return "The answer is " + (a - b);
-        if (operation === "times" || operation === "multiplied by")
-            return "The answer is " + (a * b);
-
-        if (operation === "divided by") {
-            return b === 0
-                ? "You cannot divide by zero!"
-                : "The answer is " + (a / b);
         }
-    }
 
-    // CONVERSATION
+        window.speechSynthesis.onvoiceschanged = loadVoices;
 
-    if (message.includes("hello") || message.includes("hi")) {
-        return "Hello " + (userName || "friend") + "!";
-    }
+        loadVoices();
 
-    if (message.includes("your name")) {
-        return "I'm your voice assistant!";
-    }
+        // SPEAKING
 
-    if (message.includes("how are you")) {
-        return "I'm doing great! How are you?";
-    }
+        function speak(answer) {
 
-    if (message.includes("what time")) {
-        return "I don't have a clock yet!";
-    }
+            speaking = true;
 
-    if (message.includes("favorite color")) {
-        return "My favorite color is blue!";
-    }
+            const speech = new SpeechSynthesisUtterance(answer);
 
-    if (message.includes("bye")) {
-        listening = false;
-        return "Goodbye! Talk to you later!";
-    }
+            const selectedVoice =
+                availableVoices[voiceSelect.value];
 
-    return "I don't know that one yet, but I'm learning!";
-}
+            if (selectedVoice) {
+                speech.voice = selectedVoice;
+            }
 
-if (!SpeechRecognition) {
-    output.textContent =
-        "Speech recognition is not supported in this browser.";
-} else {
-    const recognition = new SpeechRecognition();
+            speech.lang = "en-US";
 
-    recognition.lang = "en-US";
-    recognition.continuous = false;
-    recognition.interimResults = false;
+            speech.onend = function() {
 
-    listenButton.onclick = function() {
-        listening = true;
-        output.textContent = "Listening...";
-        startListening();
-    };
+                speaking = false;
 
-    stopButton.onclick = function() {
-        listening = false;
-        recognition.stop();
-        window.speechSynthesis.cancel();
-        output.textContent = "Conversation stopped.";
-    };
+                if (listening) {
+                    setTimeout(startListening, 500);
+                }
 
-    recognition.onresult = function(event) {
-        const words = event.results[0][0].transcript;
+            };
 
-        output.textContent = "You said: " + words;
+            speech.onerror = function() {
 
-        const answer = getAnswer(words);
+                speaking = false;
 
-        output.textContent += "\nAssistant: " + answer;
+                if (listening) {
+                    setTimeout(startListening, 500);
+                }
 
-        speak(answer);
-    };
+            };
 
-    recognition.onerror = function(event) {
-        if (event.error === "not-allowed") {
-            listening = false;
-            output.textContent = "Please allow microphone access.";
-        } else if (event.error !== "no-speech") {
-            output.textContent = "Microphone error: " + event.error;
+            window.speechSynthesis.speak(speech);
+
         }
-    };
 
-    recognition.onend = function() {
-        if (listening && !speaking) {
-            setTimeout(startListening, 500);
+        // ASSISTANT BRAIN
+
+        function getAnswer(words) {
+
+            const message = words.toLowerCase().trim();
+
+            // REMEMBER NAME
+
+            if (message.includes("my name is")) {
+
+                userName = words.substring(
+                    message.indexOf("my name is") + 10
+                ).trim();
+
+                return "Nice to meet you, " + userName + "!";
+
+            }
+
+            else if (
+                message.includes("what is my name") ||
+                message.includes("what's my name")
+            ) {
+
+                if (userName !== "") {
+                    return "Your name is " + userName + "!";
+                }
+
+                return "I don't know your name yet!";
+
+            }
+
+            // MATH
+
+            const mathMatch = message.match(
+                /(-?\d+(?:\.\d+)?)\s*(plus|minus|times|multiplied by|divided by)\s*(-?\d+(?:\.\d+)?)/
+            );
+
+            if (mathMatch) {
+
+                const a = Number(mathMatch[1]);
+
+                const operation = mathMatch[2];
+
+                const b = Number(mathMatch[3]);
+
+                if (operation === "plus") {
+                    return "The answer is " + (a + b);
+                }
+
+                if (operation === "minus") {
+                    return "The answer is " + (a - b);
+                }
+
+                if (
+                    operation === "times" ||
+                    operation === "multiplied by"
+                ) {
+                    return "The answer is " + (a * b);
+                }
+
+                if (operation === "divided by") {
+
+                    if (b === 0) {
+                        return "You cannot divide by zero!";
+                    }
+
+                    return "The answer is " + (a / b);
+
+                }
+
+            }
+
+            // CONVERSATION
+
+            if (
+                message.includes("hello") ||
+                message.includes("hi")
+            ) {
+
+                return "Hello " + (userName || "friend") + "!";
+
+            }
+
+            if (message.includes("your name")) {
+
+                return "I'm your new voice assistant!";
+
+            }
+
+            if (message.includes("how are you")) {
+
+                return "I'm doing great! How are you?";
+
+            }
+
+            if (message.includes("what time")) {
+
+                return "I don't have a clock yet!";
+
+            }
+
+            if (message.includes("favorite color")) {
+
+                return "My favorite color is blue!";
+
+            }
+
+            if (message.includes("bye")) {
+
+                listening = false;
+
+                return "Goodbye! Talk to you later!";
+
+            }
+
+            return "I don't know that one yet, but I'm learning!";
+
         }
-    };
-}
-</script>
+
+        // SPEECH RECOGNITION
+
+        const SpeechRecognition =
+            window.SpeechRecognition ||
+            window.webkitSpeechRecognition;
+
+        let recognition = null;
+
+        if (!SpeechRecognition) {
+
+            output.textContent =
+                "Speech recognition is not supported in this browser.";
+
+            listenButton.disabled = true;
+
+        } else {
+
+            recognition = new SpeechRecognition();
+
+            recognition.lang = "en-US";
+
+            recognition.continuous = false;
+
+            recognition.interimResults = false;
+
+            // START LISTENING
+
+            function startListening() {
+
+                if (!listening || speaking) return;
+
+                try {
+
+                    recognition.start();
+
+                } catch (error) {
+
+                    console.log("Recognition is already starting.");
+
+                }
+
+            }
+
+            listenButton.onclick = function() {
+
+                listening = true;
+
+                output.textContent = "Listening... 🎧";
+
+                startListening();
+
+            };
+
+            // STOP LISTENING
+
+            stopButton.onclick = function() {
+
+                listening = false;
+
+                speaking = false;
+
+                recognition.stop();
+
+                window.speechSynthesis.cancel();
+
+                output.textContent = "Conversation stopped.";
+
+            };
+
+            // WHEN WORDS ARE RECOGNIZED
+
+            recognition.onresult = function(event) {
+
+                const words =
+                    event.results[0][0].transcript;
+
+                output.textContent = "You said: " + words;
+
+                const answer = getAnswer(words);
+
+                output.textContent +=
+                    "\nAssistant: " + answer;
+
+                speak(answer);
+
+            };
+
+            // MICROPHONE ERRORS
+
+            recognition.onerror = function(event) {
+
+                output.textContent =
+                    "Microphone error: " + event.error;
+
+                console.log(
+                    "Speech recognition error:",
+                    event.error
+                );
+
+                if (
+                    event.error === "not-allowed" ||
+                    event.error === "service-not-allowed"
+                ) {
+                    listening = false;
+                }
+
+            };
+
+            // WHEN LISTENING ENDS
+
+            recognition.onend = function() {
+
+                if (listening && !speaking) {
+
+                    output.textContent =
+                        "I stopped hearing you. Trying again...";
+
+                    setTimeout(startListening, 1000);
+
+                }
+
+            };
+
+        }
+
+    </script>
+
 </body>
 </html>
-
