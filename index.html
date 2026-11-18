@@ -3,17 +3,19 @@
 <html>
 <head>
     <title>My Voice Assistant</title>
+
     <style>
         body {
             background: #101827;
             color: white;
-            font-family: Arial;
+            font-family: Arial, sans-serif;
             text-align: center;
             padding: 40px;
         }
 
         h1 {
             color: #54d6ff;
+            font-size: 36px;
         }
 
         button {
@@ -26,16 +28,22 @@
             cursor: pointer;
         }
 
+        button:hover {
+            background: #0066cc;
+        }
+
         #output {
             font-size: 22px;
             margin-top: 30px;
+            line-height: 1.6;
+            white-space: pre-line;
         }
     </style>
 </head>
 
 <body>
 
-    <h1>My Voice Assistant</h1>
+    <h1>🎤 My Voice Assistant</h1>
 
     <p>Click the button and talk to me!</p>
 
@@ -43,79 +51,118 @@
 
     <div id="output">Waiting for your voice...</div>
 
-<script>
-const listenButton = document.getElementById("listen");
-const output = document.getElementById("output");
+    <script>
 
-const SpeechRecognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
+        const listenButton = document.getElementById("listen");
+        const output = document.getElementById("output");
 
-if (!SpeechRecognition) {
-    output.textContent =
-        "Sorry! Your browser does not support speech recognition.";
-} else {
-    const recognition = new SpeechRecognition();
+        const SpeechRecognition =
+            window.SpeechRecognition ||
+            window.webkitSpeechRecognition;
 
-    recognition.lang = "en-US";
-    recognition.continuous = false;
-    recognition.interimResults = false;
+        if (!SpeechRecognition) {
 
-    listenButton.onclick = function() {
-        output.textContent = "Listening... 🎧";
-        recognition.start();
-    };
+            output.textContent =
+                "Sorry! Your browser does not support speech recognition.";
 
-    recognition.onresult = function(event) {
-        const words = event.results[0][0].transcript;
+        } else {
 
-        
+            const recognition = new SpeechRecognition();
 
-const message = words.toLowerCase();
+            recognition.lang = "en-US";
+            recognition.continuous = false;
+            recognition.interimResults = false;
 
-let answer = "";
+            listenButton.onclick = function() {
 
-if (message.includes("hello") || message.includes("hi")) {
-    answer = "Hello! It's nice to talk to you!";
-}
+                output.textContent = "Listening... 🎧";
 
-else if (message.includes("your name")) {
-    answer = "I'm your new voice assistant!";
-}
+                recognition.start();
 
-else if (message.includes("how are you")) {
-    answer = "I'm doing great! How are you?";
-}
+            };
 
-else if (message.includes("what time")) {
-    answer = "I don't have a clock yet!";
-}
+            recognition.onresult = function(event) {
 
-else if (message.includes("what is your favorite color")) {
-    answer = "My favorite color is blue!";
-}
+                const words = event.results[0][0].transcript;
 
-else if (message.includes("bye")) {
-    answer = "Goodbye! Talk to you later!";
-}
+                output.textContent = "You said: " + words;
 
-else {
-    answer = "That's interesting! Tell me more.";
-}
+                const message = words.toLowerCase();
 
-output.textContent += "\nAssistant: " + answer;
+                let answer = "";
 
-const speech = new SpeechSynthesisUtterance(answer);
-speech.lang = "en-US";
-window.speechSynthesis.speak(speech);
+                // ASSISTANT BRAIN
 
-    };
+                if (message.includes("hello") || message.includes("hi")) {
 
-    recognition.onerror = function(event) {
-        output.textContent = "Error: " + event.error;
-    };
-}
-</script>
+                    answer = "Hello! It's nice to talk to you!";
+
+                }
+
+                else if (message.includes("your name")) {
+
+                    answer = "I'm your new voice assistant!";
+
+                }
+
+                else if (message.includes("how are you")) {
+
+                    answer = "I'm doing great! How are you?";
+
+                }
+
+                else if (message.includes("what time")) {
+
+                    answer = "I don't have a clock yet!";
+
+                }
+
+                else if (message.includes("what is your favorite color")) {
+
+                    answer = "My favorite color is blue!";
+
+                }
+
+                else if (message.includes("bye")) {
+
+                    answer = "Goodbye! Talk to you later!";
+
+                }
+
+                else {
+
+                    answer = "That's interesting! Tell me more.";
+
+                }
+
+                output.textContent += "\nAssistant: " + answer;
+
+                // SPEAK THE ANSWER
+
+                const speech = new SpeechSynthesisUtterance(answer);
+
+                speech.lang = "en-US";
+
+                window.speechSynthesis.speak(speech);
+
+            };
+
+            recognition.onerror = function(event) {
+
+                output.textContent = "Error: " + event.error;
+
+            };
+
+            recognition.onend = function() {
+
+                listenButton.textContent = "🎤 Start Listening";
+
+            };
+
+        }
+
+    </script>
 
 </body>
 </html>
+
