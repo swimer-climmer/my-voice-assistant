@@ -359,20 +359,28 @@ if (message.includes("flip a coin") || message.includes("toss a coin")) {
   const result = Math.random() < 0.5 ? "heads" : "tails";
   return "The coin landed on " + result + "!";
 }
-        // ROCK PAPER SCISSORS
+       
+           // ROLL DICE
+if (message.includes("roll a dice") || message.includes("roll the dice")) {
+  const roll = Math.floor(Math.random() * 6) + 1;
+  return "You rolled a " + roll + "!";
+}
+           // ROCK PAPER SCISSORS
 
-if (message.includes("play rock-paper-scissors")) {
+if (message.includes("play rock paper scissors")) {
+  gameActive = false;
   return "Tell me rock, paper, or scissors!";
 }
 
-if (["rock", "paper", "scissors"].includes(message.trim())) {
+if (
+  ["rock", "paper", "scissors"].includes(message.trim())
+) {
   const player = message.trim();
-
   const choices = ["rock", "paper", "scissors"];
   const computer = choices[Math.floor(Math.random() * 3)];
 
   if (player === computer) {
-    return "I chose " + computer + "! It's a tie!";
+    return "I chose " + computer + "! We tied!";
   }
 
   if (
@@ -380,15 +388,10 @@ if (["rock", "paper", "scissors"].includes(message.trim())) {
     (player === "paper" && computer === "rock") ||
     (player === "scissors" && computer === "paper")
   ) {
-    return "I chose " + computer + "! You win! Great job!";
+    return "I chose " + computer + "! YOU WIN!";
   }
 
-  return "I chose " + computer + "! I win! Better luck next time!";
-}
-           // ROLL DICE
-if (message.includes("roll a dice") || message.includes("roll the dice")) {
-  const roll = Math.floor(Math.random() * 6) + 1;
-  return "You rolled a " + roll + "!";
+  return "I chose " + computer + "! I WIN!";
 }
             // CONVERSATION
 
