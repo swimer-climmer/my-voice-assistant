@@ -82,6 +82,8 @@
         let userColor = "";
         let userBirthday = "";
         let userAnimal = "";
+        let secretNumber = 0;
+        let gameActive = false;
 
         // LISTENING SETTINGS
 
@@ -312,11 +314,7 @@ if (message.includes("what is my favorite animal")) {
     ? "Your favorite animal is " + userAnimal + "!"
     : "You haven't told me your favorite animal yet.";
 }
-          // GUESSING GAME
-// GUESSING GAME
-let secretNumber = Math.floor(Math.random() * 10) + 1;
-let gameActive = false;
-
+         // GUESSING GAME
 if (message.includes("play a guessing game")) {
   secretNumber = Math.floor(Math.random() * 10) + 1;
   gameActive = true;
@@ -324,24 +322,37 @@ if (message.includes("play a guessing game")) {
 }
 
 if (gameActive) {
+  const numberWords = {
+    zero: 0, one: 1, two: 2, three: 3, four: 4,
+    five: 5, six: 6, seven: 7, eight: 8, nine: 9,
+    ten: 10
+  };
+
   const guessMatch = message.match(/\b\d+\b/);
+  const spokenGuess = message.trim();
+
+  let guess;
 
   if (guessMatch) {
-    const guess = Number(guessMatch[0]);
-
-    if (guess < 1 || guess > 10) {
-      return "Guess a number between 1 and 10!";
-    }
-
-    if (guess === secretNumber) {
-      gameActive = false;
-      return "You got it! Great guessing!";
-    }
-
-    return guess < secretNumber
-      ? "Too low! Try again."
-      : "Too high! Try again.";
+    guess = Number(guessMatch[0]);
+  } else if (numberWords[spokenGuess] !== undefined) {
+    guess = numberWords[spokenGuess];
+  } else {
+    return "Please guess a number between 1 and 10.";
   }
+
+  if (guess < 1 || guess > 10) {
+    return "Pick a number between 1 and 10!";
+  }
+
+  if (guess === secretNumber) {
+    gameActive = false;
+    return "You got it! You win!";
+  }
+
+  return guess < secretNumber
+    ? "Too low! Guess again!"
+    : "Too high! Guess again!";
 }
            // COIN FLIP
 if (message.includes("flip a coin") || message.includes("toss a coin")) {
