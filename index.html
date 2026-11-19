@@ -359,6 +359,23 @@ if (message.includes("flip a coin") || message.includes("toss a coin")) {
   const result = Math.random() < 0.5 ? "heads" : "tails";
   return "The coin landed on " + result + "!";
 }
+          // ROCK PAPER SCISSORS
+if (message.includes("play rock paper scissors")) {
+  const choices = ["rock", "paper", "scissors"];
+  const computer = choices[Math.floor(Math.random() * 3)];
+
+  return "I choose " + computer + "! Say rock, paper, or scissors!";
+}
+
+if (["rock", "paper", "scissors"].includes(message.trim())) {
+  const player = message.trim();
+  return "You chose " + player + "! Let's play again by saying play rock paper scissors!";
+}
+           // ROLL DICE
+if (message.includes("roll a dice") || message.includes("roll the dice")) {
+  const roll = Math.floor(Math.random() * 6) + 1;
+  return "You rolled a " + roll + "!";
+}
             // CONVERSATION
 
             if (
