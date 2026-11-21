@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Voice Assistant</title>
+    <title>My Voice Helper</title>
 
     <style>
         body {
@@ -52,7 +52,7 @@
 
 <body>
 
-    <h1>🎤 My Voice Assistant</h1>
+    <h1>🎤 My Voice Helper</h1>
 
     <p>Click the button and talk to me!</p>
 
@@ -393,6 +393,18 @@ if (
 
   return "I chose " + computer + "! I WIN!";
 }
+         
+          // GREETINGS BY TIME
+if (message.includes("good morning") ||
+    message.includes("good afternoon") ||
+    message.includes("good evening")) {
+
+  const hour = new Date().getHours();
+
+  if (hour < 12) return "Good morning! I hope you have a great day!";
+  if (hour < 18) return "Good afternoon! How is your day going?";
+  return "Good evening! It's nice to talk to you!";
+}
             // CONVERSATION
 
             if (
@@ -564,6 +576,70 @@ if (
             };
 
         }
+
+async function getWeather() {
+    if (!navigator.geolocation) {
+        speak("Your browser does not support location services.");
+        return;
+    }
+
+    speak("Getting your local weather.");
+
+    navigator.geolocation.getCurrentPosition(async (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        try {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto`;
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            const current = data.current;
+            const temperature = Math.round(current.temperature_2m);
+            const feelsLike = Math.round(current.apparent_temperature);
+            const humidity = current.relative_humidity_2m;
+            const wind = Math.round(current.wind_speed_10m);
+
+            const weatherCodes = {
+                0: "clear skies",
+                1: "mostly clear",
+                2: "partly cloudy",
+                3: "overcast",
+                45: "foggy",
+                48: "foggy",
+                51: "light drizzle",
+                53: "drizzle",
+                55: "heavy drizzle",
+                61: "light rain",
+                63: "rain",
+                65: "heavy rain",
+                71: "light snow",
+                73: "snow",
+                75: "heavy snow",
+                80: "rain showers",
+                81: "rain showers",
+                82: "heavy rain showers",
+                95: "a thunderstorm"
+            };
+
+            const description =
+                weatherCodes[current.weather_code] || "changing conditions";
+
+            speak(
+                `Right now it is ${temperature} degrees and ${description}. ` +
+                `It feels like ${feelsLike} degrees, humidity is ${humidity} percent, ` +
+                `and wind speed is ${wind} miles per hour.`
+            );
+
+        } catch (error) {
+            speak("Sorry, I couldn't get the weather right now.");
+        }
+
+    }, () => {
+        speak("I need permission to access your location to get the weather.");
+    });
+}
 
     </script>
 
