@@ -530,12 +530,27 @@ if (message.includes("good morning") ||
 
                 output.textContent = "You said: " + words;
 
-                const answer = getAnswer(words);
+               
+const weatherQuestion = words.toLowerCase();
 
-                output.textContent +=
-                    "\nAssistant: " + answer;
+if (
+    weatherQuestion.includes("weather") ||
+    weatherQuestion.includes("temperature") ||
+    weatherQuestion.includes("will it rain") ||
+    weatherQuestion.includes("is it raining")
+) {
+    output.textContent += "\nAssistant: Checking the weather...";
+    getWeather();
+    return;
+}
 
-                speak(answer);
+const answer = getAnswer(words);
+
+output.textContent +=
+    "\nAssistant: " + answer;
+
+speak(answer);
+
 
             };
 
